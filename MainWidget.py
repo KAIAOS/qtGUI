@@ -8,6 +8,7 @@ from PyQt5.Qt import QWidget, QColor, QPixmap, QIcon, QSize, QCheckBox
 from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QPushButton, QSplitter,\
     QComboBox, QLabel, QSpinBox, QFileDialog
 from PaintBoard import PaintBoard
+from PIL import Image
 
 class MainWidget(QWidget):
 
@@ -25,6 +26,7 @@ class MainWidget(QWidget):
         '''
                   初始化成员变量
         '''
+        self.filename = ''
         self.__paintBoard = PaintBoard(self)
         #获取颜色列表(字符串类型)
         self.__colorList = QColor.colorNames() 
@@ -33,7 +35,7 @@ class MainWidget(QWidget):
         '''
                   初始化界面
         '''
-        self.setFixedSize(1280,640)
+        self.setFixedSize(720,580)
         self.setWindowTitle("PaintBoard Example PyQt5")
         
         #新建一个水平布局作为本窗体的主布局
@@ -48,11 +50,15 @@ class MainWidget(QWidget):
         sub_layout = QVBoxLayout() 
         
         #设置此子布局和内部控件的间距为10px
-        sub_layout.setContentsMargins(10, 10, 10, 10) 
+        sub_layout.setSpacing(10)
+
+        self.__btn_Open = QPushButton('打开文件')
+        self.__btn_Open.setParent(self)
+        self.__btn_Open.clicked.connect(self.openfile)
+        sub_layout.addWidget(self.__btn_Open)
 
         self.__btn_Clear = QPushButton("清空画板")
         self.__btn_Clear.setParent(self) #设置父对象为本界面
-       
         #将按键按下信号与画板清空函数相关联
         self.__btn_Clear.clicked.connect(self.__paintBoard.Clear) 
         sub_layout.addWidget(self.__btn_Clear)
@@ -101,6 +107,12 @@ class MainWidget(QWidget):
         main_layout.addLayout(sub_layout) #将子布局加入主布局
 
 
+    def openfile(self):
+        openfile_name = QFileDialog.getOpenFileName(self, '选择文件', '', 'Excel files(*)')
+        self.filename = openfile_name[0]
+        print(self.filename)
+        img = Image.open(self.filename)
+        self.__paintBoard.fillwithpic(self.filename)
     def __fillColorList(self, comboBox):
 
         index_black = 0

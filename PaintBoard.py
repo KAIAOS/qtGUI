@@ -6,7 +6,7 @@ Created on 2018年8月9日
 
 from PyQt5.QtWidgets import QWidget
 from PyQt5.Qt import QPixmap, QPainter, QPoint, QPaintEvent, QMouseEvent, QPen,\
-    QColor, QSize
+    QColor, QSize, QImage
 from PyQt5.QtCore import Qt
 
 class PaintBoard(QWidget):
@@ -24,10 +24,10 @@ class PaintBoard(QWidget):
     def __InitData(self):
         
         self.__size = QSize(480,460)
-        
+        self.img = None
         #新建QPixmap作为画板，尺寸为__size
         self.__board = QPixmap(self.__size)
-        self.__board.fill(Qt.black) #用白色填充画板
+        self.__board.fill(Qt.white) #用白色填充画板
         
         self.__IsEmpty = True #默认为空画板 
         self.EraserMode = False #默认为禁用橡皮擦模式
@@ -40,14 +40,22 @@ class PaintBoard(QWidget):
         self.__thickness = 10       #默认画笔粗细为10px
         self.__penColor = QColor("white")#设置默认画笔颜色为黑色
         self.__colorList = QColor.colorNames() #获取颜色列表
-     
+
+    def fillwithpic(self, filename):
+
+        img = QImage()
+        img.load(filename)
+        self.img = img
+        self.__board = QPixmap(img)
+        #self.__board.fromImage(self.img)
+
     def __InitView(self):
         #设置界面的尺寸为__size
         self.setFixedSize(self.__size)
         
     def Clear(self):
         #清空画板
-        self.__board.fill(Qt.white)
+        self.__board = QPixmap(self.img)
         self.update()
         self.__IsEmpty = True
         
